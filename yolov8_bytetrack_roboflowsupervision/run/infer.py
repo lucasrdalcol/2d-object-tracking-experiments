@@ -40,16 +40,19 @@ line_counter = LineCounter(start=cfg.LINE_START, end=cfg.LINE_END)
 box_annotator = BoxAnnotator(
     ColorPalette(), thickness=4, text_thickness=4, text_scale=2
 )  # Annotation settings
-line_annotator = LineCounterAnnotator(thickness=4, text_thickness=4, text_scale=2)  # LineAnnotation settings
+line_annotator = LineCounterAnnotator(
+    thickness=4, text_thickness=4, text_scale=2
+)  # LineAnnotation settings
 
 video_info = VideoInfo.from_video_path(cfg.SOURCE_VIDEO_PATH)  # Video info
+video_tqdm = tqdm(generator, total=video_info.total_frames)
 with VideoSink(
     output_path=cfg.TARGET_VIDEO_PATH, video_info=video_info
 ) as sink:  # Video sink
-    for frame in tqdm(
-        generator, total=video_info.total_frames
-    ):  # Iterate over frames of the video
+    for frame in video_tqdm:  # Iterate over frames of the video
         results = model(frame, verbose=False)[0]  # Inference for one frame
+
+        video_tqdm.set_postfix(fps=1/(results.speed["inference"]/1000))
 
         detections = Detections(
             xyxy=results.boxes.xyxy.cpu().numpy(),
@@ -69,12 +72,14 @@ with VideoSink(
             f"#{tracker_id} {class_names[class_id]} {confidence:0.2f}"
             for _, confidence, class_id, tracker_id in detections
         ]  # Labels for each detection
-        
+
         line_counter.update(detections=detections)
 
         frame = box_annotator.annotate(
             frame=frame, detections=detections, labels=labels
         )  # Annotate frame with detections and labels
-        line_annotator.annotate(frame=frame, line_counter=line_counter)  # Annotate frame with line counter
+        line_annotator.annotate(
+            frame=frame, line_counter=line_counter
+        )  # Annotate frame with line counter
 
         sink.write_frame(frame)  # Write frame to the video sink
