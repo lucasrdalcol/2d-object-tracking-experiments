@@ -27,7 +27,8 @@ ultralytics.checks()
 model = YOLO(cfg.MODEL_PATH)
 model.fuse()
 
-class_names = model.model.names
+CLASS_NAMES_DICT = model.model.names
+CLASS_ID = [2, 3, 5, 7]
 
 byte_tracker = BYTETracker(cfg.BYTETrackerArgs())
 
@@ -54,10 +55,11 @@ with VideoSink(
 
         video_tqdm.set_postfix(fps=1/(results.speed["inference"]/1000))
 
+        mask_classes_interest = np.isin(results.boxes.cls.cpu().numpy().astype(int), CLASS_ID)
         detections = Detections(
-            xyxy=results.boxes.xyxy.cpu().numpy(),
-            confidence=results.boxes.conf.cpu().numpy(),
-            class_id=results.boxes.cls.cpu().numpy().astype(int),
+            xyxy=results.boxes.xyxy[mask_classes_interest].cpu().numpy(),
+            confidence=results.boxes.conf[mask_classes_interest].cpu().numpy(),
+            class_id=results.boxes.cls[mask_classes_interest].cpu().numpy().astype(int),
         )  # Convert results to Detections roboflow framework in order to plot them
 
         tracks = byte_tracker.update(
@@ -67,9 +69,10 @@ with VideoSink(
         )
         tracker_id = match_detections_with_tracks(detections=detections, tracks=tracks)
         detections.tracker_id = np.array(tracker_id)
-
+        
+        # TODO: When detections are empty, it crashes. Needs to be fixed.
         labels = [
-            f"#{tracker_id} {class_names[class_id]} {confidence:0.2f}"
+            f"#{tracker_id} {CLASS_NAMES_DICT[class_id]} {confidence:0.2f}"
             for _, confidence, class_id, tracker_id in detections
         ]  # Labels for each detection
 

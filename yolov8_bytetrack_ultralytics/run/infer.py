@@ -70,7 +70,7 @@ while video_capture.isOpened():
                 if len(track) > 30:  # Limit the track history to 30 frames
                     track.pop(0)
 
-                # Plot tracks using opencv. But, we could use the annotator instance from ultralytics to do this with method "annotator.draw_centroid_and_tracks"
+                # Plot tracks traces using opencv. But, we could use the annotator instance from ultralytics to do this with method "annotator.draw_centroid_and_tracks"
                 points = np.array(track, dtype=np.int32).reshape((-1, 1, 2))
                 cv2.circle(frame, (track[-1]), 7, colors(int(class_idx), True), -1)
                 cv2.polylines(
