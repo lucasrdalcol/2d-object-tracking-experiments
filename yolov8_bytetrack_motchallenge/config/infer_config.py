@@ -12,11 +12,10 @@ DATASET_DIR = os.path.join(os.getenv("PHD_DATASETS"), PROJECT_NAME)
 MODELS_DIR = os.path.join(os.getenv("PHD_MODELS"), PROJECT_NAME)
 RESULTS_DIR = os.path.join(os.getenv("PHD_RESULTS"), PROJECT_NAME)
 SEED = 123
-SOURCE_VIDEO_PATH = os.path.join(DATASET_DIR, "motchallenge_mot16/MOT16-02-raw.mp4")
-TARGET_VIDEO_PATH = os.path.join(RESULTS_DIR, "motchallenge_mot16/MOT16-02-results-yolov8bytetrack.mp4")
+SOURCE_VIDEO_PATH = os.path.join(DATASET_DIR, "MOT16/train/MOT16-13/video/MOT16-13.mp4")
+TARGET_VIDEO_PATH = os.path.join(RESULTS_DIR, "motchallenge_mot16/train/MOT16-13/MOT16-13-results-yolov8bytetrack.mp4")
+DETECTIONS_OUTPUT_FILE_PATH = os.path.join(RESULTS_DIR, "results_trackevalrepo/trackers/mot_challenge/MOT16-train/yolov8_bytetrack/data/MOT16-13.txt")
 MODEL_PATH = os.path.join(MODELS_DIR, "yolov8x.pt")
-LINE_START = Point(50, 1500)
-LINE_END = Point(3840-50, 1500)
 
 # Byte Tracker arguments inside a class
 @dataclass(frozen=True)

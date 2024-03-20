@@ -21,6 +21,7 @@ from supervision.tools.detections import Detections, BoxAnnotator
 from supervision.tools.line_counter import LineCounter, LineCounterAnnotator
 import yolov8_bytetrack_motchallenge.config.infer_config as cfg
 from yolov8_bytetrack_motchallenge.utils.tracking import *
+from yolov8_bytetrack_motchallenge.utils.common import *
 
 ultralytics.checks()
 
@@ -29,8 +30,6 @@ model.fuse()
 
 CLASS_NAMES_DICT = model.model.names
 CLASS_IDS = [0]  # Pedestrians only (class 0) or "all" for all classes
-
-byte_tracker = BYTETracker(cfg.BYTETrackerArgs())
 
 generator = get_video_frames_generator(cfg.SOURCE_VIDEO_PATH)  # Video frames generator
 
@@ -43,11 +42,9 @@ video_tqdm = tqdm(generator, total=video_info.total_frames)
 with VideoSink(
     output_path=cfg.TARGET_VIDEO_PATH, video_info=video_info
 ) as sink:  # Video sink
-    for frame in video_tqdm:  # Iterate over frames of the video
+    for frame_idx, frame in enumerate(video_tqdm, start=1):  # Iterate over frames of the video
         results = model.track(source=frame, persist=True, verbose=False)[0]
         video_tqdm.set_postfix(fps=1 / (results.speed["inference"] / 1000))
-
-        boxes = results.boxes.xyxy.cpu()  # Extract boxes in the format (x1, y1, x2, y2)
 
         if results.boxes.id is not None:  # If there are any detections
             if CLASS_IDS == "all":
@@ -75,6 +72,41 @@ with VideoSink(
                 f"#{tracker_id} {CLASS_NAMES_DICT[class_id]} {confidence:0.2f}"
                 for _, confidence, class_id, tracker_id in detections
             ]  # Labels for each detection
+            
+            # Get detections in MOT format and save them to a file
+            detections_motformat = [
+                (
+                    frame_idx,
+                    tracker_id,
+                    bb_x,
+                    bb_y,
+                    width,
+                    height,
+                    confidence,
+                    x,
+                    y,
+                    z,
+                )
+                for (
+                    frame_idx,
+                    tracker_id,
+                    (bb_x, bb_y, width, height),
+                    confidence,
+                    x,
+                    y,
+                    z,
+                ) in zip(
+                    [frame_idx] * len(detections),
+                    results.boxes.id[mask_classes_interest].cpu().numpy().astype(int),
+                    results.boxes.xywh[mask_classes_interest].cpu().numpy(),
+                    results.boxes.conf[mask_classes_interest].cpu().numpy(),
+                    [-1] * len(detections),
+                    [-1] * len(detections),
+                    [-1] * len(detections),
+                )
+            ]
+
+            write_mot_format(detections_motformat, cfg.DETECTIONS_OUTPUT_FILE_PATH)
 
             frame = box_annotator.annotate(
                 frame=frame, detections=detections, labels=labels
