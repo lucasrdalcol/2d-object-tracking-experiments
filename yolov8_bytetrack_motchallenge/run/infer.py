@@ -97,7 +97,7 @@ with VideoSink(
                     z,
                 ) in zip(
                     [frame_idx] * len(detections),
-                    results.boxes.id[mask_classes_interest].cpu().numpy().astype(int),
+                    results.boxes.id[mask_classes_interest].cpu().numpy(),
                     results.boxes.xywh[mask_classes_interest].cpu().numpy(),
                     results.boxes.conf[mask_classes_interest].cpu().numpy(),
                     [-1] * len(detections),

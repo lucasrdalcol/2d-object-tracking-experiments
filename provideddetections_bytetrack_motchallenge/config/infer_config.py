@@ -12,10 +12,10 @@ DATASET_DIR = os.path.join(os.getenv("PHD_DATASETS"), PROJECT_NAME)
 MODELS_DIR = os.path.join(os.getenv("PHD_MODELS"), PROJECT_NAME)
 RESULTS_DIR = os.path.join(os.getenv("PHD_RESULTS"), PROJECT_NAME)
 SEED = 123
-SOURCE_VIDEO_PATH = os.path.join(DATASET_DIR, "MOT16/train/MOT16-02/video/MOT16-02.mp4")
-SOURCE_DETECTIONS_FILE = os.path.join(DATASET_DIR, "MOT16/train/MOT16-13/det/det.txt")
-TARGET_VIDEO_PATH = os.path.join(RESULTS_DIR, "motchallenge_mot16/train/MOT16-02/MOT16-02-results-yolov8bytetrackconfidence.mp4")
-DETECTIONS_OUTPUT_FILE_PATH = os.path.join(RESULTS_DIR, "results_trackevalrepo/trackers/mot_challenge/MOT16-train/yolov8_bytetrack_confidence/data/MOT16-02.txt")
+SOURCE_VIDEO_PATH = os.path.join(DATASET_DIR, "MOT16/train/MOT16-13/video/MOT16-13.mp4")
+SOURCE_DETECTIONS_FILE = os.path.join(RESULTS_DIR, "results_trackevalrepo/trackers/mot_challenge/MOT16-train/MPNTrack/data/MOT16-13.txt")
+TARGET_VIDEO_PATH = os.path.join(RESULTS_DIR, "motchallenge_mot16/train/MOT16-13/MOT16-13-results-MPNTrack.mp4")
+DETECTIONS_OUTPUT_FILE_PATH = os.path.join(RESULTS_DIR, "results_trackevalrepo/trackers/mot_challenge/MOT16-train/provideddetections_bytetrack/data/MOT16-13.txt")
 MODEL_PATH = os.path.join(MODELS_DIR, "yolov8x.pt")
 
 # Byte Tracker arguments inside a class
