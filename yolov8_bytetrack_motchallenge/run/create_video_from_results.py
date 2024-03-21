@@ -19,9 +19,9 @@ from supervision.video.sink import VideoSink
 from supervision.notebook.utils import show_frame_in_notebook
 from supervision.tools.detections import Detections, BoxAnnotator
 from supervision.tools.line_counter import LineCounter, LineCounterAnnotator
-import provideddetections_bytetrack_motchallenge.config.infer_config as cfg
-from provideddetections_bytetrack_motchallenge.utils.tracking import *
-from provideddetections_bytetrack_motchallenge.utils.common import *
+import yolov8_bytetrack_motchallenge.config.infer_config as cfg
+from yolov8_bytetrack_motchallenge.utils.tracking import *
+from yolov8_bytetrack_motchallenge.utils.common import *
 
 generator = get_video_frames_generator(cfg.SOURCE_VIDEO_PATH)  # Video frames generator
 

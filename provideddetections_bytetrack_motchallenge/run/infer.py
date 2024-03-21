@@ -64,6 +64,15 @@ with VideoSink(
                 trackers_id = match_detections_with_tracks(detections=detections, tracks=tracks)
                 detections.tracker_id = np.array(trackers_id)
 
+                # Take out the detections that are not associated with any tracker
+                mask_none = np.logical_not(np.isnan(detections.tracker_id.astype(float)))
+
+                detections.xyxy = detections.xyxy[mask_none]
+                detections.confidence = detections.confidence[mask_none]
+                detections.class_id = detections.class_id[mask_none]
+                detections.tracker_id = detections.tracker_id[mask_none]
+                xyhw_detections = xyhw_detections[mask_none]
+
                 try:
                     labels = [
                         f"#{tracker_id} pedestrian {confidence:0.2f}"
@@ -96,7 +105,7 @@ with VideoSink(
                         z,
                     ) in zip(
                         [frame_idx] * len(detections),
-                        trackers_id,
+                        detections.tracker_id,
                         xyhw_detections,
                         [1] * len(detections),
                         [-1] * len(detections),

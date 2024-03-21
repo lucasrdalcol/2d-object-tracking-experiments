@@ -27,7 +27,7 @@ def match_detections_with_tracks(
     iou = box_iou_batch(tracks_boxes, detections.xyxy)
     track2detection = np.argmax(iou, axis=1)
 
-    tracker_ids = [-1] * len(detections)
+    tracker_ids = [None] * len(detections)
 
     for tracker_index, detection_index in enumerate(track2detection):
         if iou[tracker_index, detection_index] != 0:
