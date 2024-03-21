@@ -43,7 +43,7 @@ with VideoSink(
     output_path=cfg.TARGET_VIDEO_PATH, video_info=video_info
 ) as sink:  # Video sink
     for frame_idx, frame in enumerate(video_tqdm, start=1):  # Iterate over frames of the video
-        results = model.track(source=frame, persist=True, verbose=False)[0]
+        results = model.track(source=frame, persist=True, verbose=False, tracker=cfg.TRACKER)[0]
         video_tqdm.set_postfix(fps=1 / (results.speed["inference"] / 1000))
 
         if results.boxes.id is not None:  # If there are any detections
