@@ -34,3 +34,17 @@ def xywh_to_xyxy(detections):
         y2 = y1 + height
         converted_detections.append([x1, y1, x2, y2])
     return converted_detections
+
+def read_gt_from_file(file_path):
+    detections = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            detection = line.strip().split(',')
+            detection[0], detection[1], detection[6], detection[7]= int(detection[0]), int(detection[1]), int(detection[6]), int(detection[7])
+            detection[2:6] = list(map(float, detection[2:6]))
+            detection[-1] = float(detection[-1])
+            frame_number = detection[0]
+            if frame_number not in detections.keys():
+                detections[frame_number] = []
+            detections[frame_number].append(detection)
+    return detections
